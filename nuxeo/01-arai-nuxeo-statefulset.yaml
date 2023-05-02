@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    service: arai-nuxeo
+  name: arai-nuxeo
+spec:
+  serviceName: "arai-nuxeo"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: arai-nuxeo
+  template:
+    metadata:
+      labels:
+        app: arai-nuxeo
+    spec:
+      imagePullSecrets: 
+       - name: uner-registry
+      initContainers:
+      - name: volume-permissions
+        image: alpine
+        command:   
+        - chown
+        - -R  
+        - 1000:1000
+        - /var/lib/nuxeo/data
+        volumeMounts:
+        - name: nuxeo-storage
+          mountPath: /var/lib/nuxeo/data
+          subPath: nuxeo
+      containers:
+      - name: arai-nuxeo
+        image: registry.uner.edu.ar:5000/nuxeo-uner:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: NUXEO_PACKAGES
+          value: 'nuxeo-web-ui'
+        - name: TZ
+          value: America/Buenos_Aires          
+        volumeMounts:
+        - name: nuxeo-storage
+          mountPath: /var/lib/nuxeo/data
+          subPath: nuxeo
+        resources: {}
+      restartPolicy: Always 
+      volumes:
+        - name: "nuxeo-storage"
+          persistentVolumeClaim:
+            claimName: "nuxeo-storage"
+

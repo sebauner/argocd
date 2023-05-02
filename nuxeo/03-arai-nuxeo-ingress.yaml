@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-arai-nuxeo
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-stg
+spec:
+  tls:
+  - hosts:
+    - nuxeo.k8s-dev.uner.edu.ar
+    secretName: letsencrypt-nuxeo-dev
+  rules:
+  - host: "nuxeo.k8s-dev.uner.edu.ar"
+    http:
+      paths:
+      - pathType: Prefix      
+        path: "/"
+        backend:
+          service:
+             name: arai-nuxeo-svc
+             port: 
+               number: 8080
