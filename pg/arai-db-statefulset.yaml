@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    service: pg
+  name: pg
+spec:
+  serviceName: "arai-pg"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        service: pg
+    spec:
+      containers:
+      - name: pg
+        env:
+        - name: POSTGRES_PASSWORD
+          value: Admin_1234
+        - name: TZ
+          value: America/Buenos_Aires
+        image:  postgres:11.6
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: db-storage
+          mountPath: /var/lib/postgresql/data
+          subPath: postgres
+        resources: {}
+      restartPolicy: Always 
+      volumes:
+        - name: "db-storage"
+          persistentVolumeClaim:
+            claimName: "db-storage"
