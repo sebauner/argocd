@@ -4,5 +4,5 @@ commonLabels:
   org: siu
 resources:
   - arai-db-claim.yaml
-  - arai-db-service.yaml
+#  - arai-db-service.yaml
   - arai-db-statefulset.yaml
